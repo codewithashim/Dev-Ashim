@@ -1,86 +1,103 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface BootLoaderProps {
   onBootComplete: () => void
 }
 
+interface BootMessage {
+  text: string
+  type: 'info' | 'ok' | 'done' | 'header'
+  delay: number
+}
+
 export default function BootLoader({ onBootComplete }: BootLoaderProps) {
-  const [bootMessages, setBootMessages] = useState<string[]>([])
+  const [bootMessages, setBootMessages] = useState<BootMessage[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [progress, setProgress] = useState(0)
-  const [showLogo, setShowLogo] = useState(true)
+  const [showWelcome, setShowWelcome] = useState(false)
 
   useEffect(() => {
-    const messages = [
-      '[    0.000000] Linux version 6.8.0-ashim (ashim@portfolio) (gcc version 13.2.0)',
-      '[    0.001234] Command line: BOOT_IMAGE=/boot/vmlinuz root=/dev/sda1 ro quiet splash',
-      '[    0.012456] KERNEL supported cpus:',
-      '[    0.023678] x86/fpu: Supporting XSAVE feature 0x001: \'x87 floating point registers\'',
-      '[    0.045123] ACPI: Core revision 20230628',
-      '[    0.067890] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff',
-      '[    0.089234] APIC: Switch to symmetric I/O mode setup',
-      '[    0.123456] Freeing SMP alternatives memory: 40K',
-      '[    0.156789] smpboot: CPU0: Intel(R) Core(TM) i7-12700K CPU @ 3.60GHz',
-      '[    0.234567] Performance Events: Skylake events, Intel PMU driver',
-      '[    0.312345] random: crng init done',
-      '[    0.445678] NET: Registered PF_INET protocol family',
-      '[    0.567890] PCI: Using ACPI for IRQ routing',
-      '[    0.678901] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]',
-      '[    0.789012] ACPI: AC: AC Adapter [AC] (on-line)',
-      '[    0.890123] ACPI: battery: Slot [BAT0] (battery present)',
-      '[    1.012345] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input0',
-      '[    1.123456] ACPI: button: Power Button [PWRF]',
-      '[    1.234567] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled',
-      '[    1.345678] Non-volatile memory driver v1.3',
-      '[    1.456789] Linux agpgart interface v0.103',
-      '[    1.567890] ACPI: bus type USB registered',
-      '[    1.678901] usbcore: registered new interface driver usbfs',
-      '[    1.789012] usbcore: registered new interface driver hub',
-      '[    1.890123] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12',
-      '[    1.987654] serio: i8042 KBD port at 0x60,0x64 irq 1',
-      '[    2.098765] serio: i8042 AUX port at 0x60,0x64 irq 12',
-      '[    2.123456] mousedev: PS/2 mouse device common for all mice',
-      '[    2.234567] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input1',
-      '[    2.345678] rtc_cmos 00:01: registered as rtc0',
-      '[    2.456789] EXT4-fs (sda1): mounted filesystem with ordered data mode',
-      '[    2.567890] Starting systemd...',
-      '[    2.678901] systemd[1]: systemd 255.2 running in system mode',
-      '[    2.789012] systemd[1]: Detected architecture x86-64',
-      '[    2.890123] systemd[1]: Hostname set to <ashim-portfolio>',
-      '[    2.987654] systemd[1]: Reached target Local File Systems',
-      '[    3.098765] systemd[1]: Starting Network Manager...',
-      '[    3.212345] systemd[1]: Started D-Bus System Message Bus',
-      '[    3.334567] systemd[1]: Starting User Login Management...',
-      '[    3.445678] systemd[1]: Started Network Manager',
-      '[    3.556789] NetworkManager[456]: NetworkManager is running',
-      '[    3.667890] systemd[1]: Starting GNOME Display Manager...',
-      '[    3.778901] systemd[1]: Started GNOME Display Manager',
-      '[  OK  ] Started User Login Management',
-      '[  OK  ] Reached target Network',
-      '[  OK  ] Reached target Multi-User System',
-      '[  OK  ] Reached target Graphical Interface',
-      '[  OK  ] Starting GNOME Shell...',
-      'Loading Ashim OS...',
+    const messages: BootMessage[] = [
+      { text: 'Ashim OS v1.0.0-portfolio [Linux 6.8.0-ashim]', type: 'header', delay: 0 },
+      { text: '', type: 'info', delay: 50 },
+      { text: '[    0.000000] Initializing kernel subsystems...', type: 'info', delay: 40 },
+      { text: '[    0.123456] CPU: Intel(R) Core(TM) Portfolio Engine', type: 'info', delay: 40 },
+      { text: '[    0.234567] Memory: 8GB available', type: 'info', delay: 40 },
+      { text: '[  OK  ] Kernel initialization complete', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 30 },
+      { text: '[    0.345678] Loading core system modules...', type: 'info', delay: 40 },
+      { text: '[    0.456789] Module: Desktop Environment', type: 'info', delay: 40 },
+      { text: '[    0.567890] Module: Window Manager', type: 'info', delay: 40 },
+      { text: '[    0.678901] Module: Application Framework', type: 'info', delay: 40 },
+      { text: '[  OK  ] Core modules loaded', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 30 },
+      { text: '[    1.012345] Starting systemd services...', type: 'info', delay: 40 },
+      { text: '[    1.123456] Starting Portfolio Service...', type: 'info', delay: 40 },
+      { text: '[    1.234567] Starting Project Manager...', type: 'info', delay: 40 },
+      { text: '[    1.345678] Starting Experience Handler...', type: 'info', delay: 40 },
+      { text: '[  OK  ] Started Portfolio Service', type: 'ok', delay: 60 },
+      { text: '[  OK  ] Started Project Manager', type: 'ok', delay: 60 },
+      { text: '[  OK  ] Started Experience Handler', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 30 },
+      { text: '[    1.567890] Loading user data and assets...', type: 'info', delay: 40 },
+      { text: '[    1.678901] Fetching: About.json', type: 'info', delay: 40 },
+      { text: '[    1.789012] Fetching: Projects.json', type: 'info', delay: 40 },
+      { text: '[    1.890123] Fetching: Experience.json', type: 'info', delay: 40 },
+      { text: '[    1.987654] Fetching: Skills.json', type: 'info', delay: 40 },
+      { text: '[  OK  ] Portfolio data loaded', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 30 },
+      { text: '[    2.123456] Mounting virtual filesystems...', type: 'info', delay: 40 },
+      { text: '[    2.234567] Mounted: /desktop', type: 'info', delay: 40 },
+      { text: '[    2.345678] Mounted: /applications', type: 'info', delay: 40 },
+      { text: '[    2.456789] Mounted: /terminal', type: 'info', delay: 40 },
+      { text: '[  OK  ] All filesystems mounted', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 30 },
+      { text: '[    2.678901] Starting display manager...', type: 'info', delay: 40 },
+      { text: '[    2.789012] Initializing graphics subsystem', type: 'info', delay: 40 },
+      { text: '[    2.890123] Loading UI components', type: 'info', delay: 40 },
+      { text: '[    2.987654] Preparing workspace', type: 'info', delay: 40 },
+      { text: '[  OK  ] Display manager started', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 30 },
+      { text: '[  OK  ] Reached target Multi-User System', type: 'ok', delay: 60 },
+      { text: '[  OK  ] Reached target Graphical Interface', type: 'ok', delay: 60 },
+      { text: '', type: 'info', delay: 100 },
+      { text: 'Ashim OS 1.0.0 LTS', type: 'done', delay: 200 },
+      { text: 'ashim-portfolio login: _', type: 'done', delay: 500 },
     ]
 
+    let isMounted = true
     let index = 0
-    const messageInterval = setInterval(() => {
-      if (index < messages.length) {
-        setBootMessages(prev => [...prev, messages[index]])
-        setProgress(((index + 1) / messages.length) * 100)
-        index++
-      } else {
-        clearInterval(messageInterval)
-        setTimeout(() => {
-          setShowLogo(false)
-          setTimeout(onBootComplete, 500)
-        }, 1000)
-      }
-    }, 50)
 
-    return () => clearInterval(messageInterval)
+    const displayMessages = async () => {
+      for (const message of messages) {
+        if (!isMounted) break
+        
+        await new Promise(resolve => setTimeout(resolve, message.delay))
+        
+        if (isMounted) {
+          setBootMessages(prev => [...prev, message])
+          setCurrentIndex(index)
+          setProgress(((index + 1) / messages.length) * 100)
+          index++
+        }
+      }
+
+      if (isMounted) {
+        await new Promise(resolve => setTimeout(resolve, 800))
+        setShowWelcome(true)
+        await new Promise(resolve => setTimeout(resolve, 1200))
+        onBootComplete()
+      }
+    }
+
+    displayMessages()
+
+    return () => {
+      isMounted = false
+    }
   }, [onBootComplete])
 
   return (
@@ -88,55 +105,158 @@ export default function BootLoader({ onBootComplete }: BootLoaderProps) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[9999] bg-black text-green-400 font-mono overflow-hidden"
+      className="fixed inset-0 z-[9999] bg-black font-mono text-sm overflow-hidden"
     >
-      {showLogo && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.1 }}
-          className="absolute inset-0 flex items-center justify-center"
-        >
-          <div className="text-center">
-            <div className="text-6xl mb-4 font-bold bg-gradient-to-r from-green-400 to-teal-400 bg-clip-text text-transparent">
-              ASHIM OS
-            </div>
-            <div className="text-sm text-green-500/50 mb-8">version 1.0.0-portfolio</div>
-            
-            {/* Progress bar */}
-            <div className="w-64 h-2 bg-gray-800 rounded-full overflow-hidden mx-auto">
-              <motion.div
-                className="h-full bg-gradient-to-r from-green-500 to-teal-500"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-            <div className="text-xs text-green-500/70 mt-2">{Math.round(progress)}%</div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Boot messages overlay */}
-      <div className="absolute inset-0 p-6 overflow-hidden">
-        <div className="space-y-0.5 text-xs">
-          {bootMessages.filter(msg => msg).map((message, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: message?.startsWith('[  OK  ]') ? 1 : 0.7, x: 0 }}
-              className={message?.startsWith('[  OK  ]') ? 'text-green-400 font-semibold' : 'text-green-500/60'}
-            >
-              {message}
-            </motion.div>
-          ))}
-        </div>
+      {/* Scanline effect */}
+      <div className="absolute inset-0 pointer-events-none opacity-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/10 to-transparent animate-scan" />
       </div>
 
-      {/* Blinking cursor at bottom */}
-      <div className="absolute bottom-6 left-6 flex items-center space-x-1 text-sm">
-        <span className="text-green-400">ashim@portfolio:~$</span>
-        <span className="animate-blink">▊</span>
+      {/* CRT monitor effect */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-green-500/5 via-transparent to-green-500/5" />
+
+      {/* Boot messages container */}
+      <div className="relative h-full overflow-hidden">
+        {/* Header section with logo */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="absolute top-0 left-0 right-0 p-6 border-b border-green-500/20"
+        >
+          <div className="flex items-center gap-4">
+            {/* ASCII Logo */}
+            <div className="text-green-400 text-xs leading-tight font-bold">
+              <pre className="terminal-glow">{`
+ █████╗  ██████╗ ███████╗
+██╔══██╗██╔═══██╗██╔════╝
+███████║██║   ██║███████╗
+██╔══██║██║   ██║╚════██║
+██║  ██║╚██████╔╝███████║
+╚═╝  ╚═╝ ╚═════╝ ╚══════╝`}</pre>
+            </div>
+            
+            {/* System info */}
+            <div className="flex-1 text-green-500/70 text-xs space-y-1">
+              <div>ASHIM OPERATING SYSTEM</div>
+              <div className="text-green-400/50">Portfolio Edition v1.0.0 LTS</div>
+              <div className="text-cyan-400/50">Kernel 6.8.0-ashim-generic</div>
+            </div>
+
+            {/* Progress indicator */}
+            <div className="text-right">
+              <div className="text-cyan-400 text-xl font-bold terminal-glow">
+                {Math.round(progress)}%
+              </div>
+              <div className="text-green-500/50 text-xs mt-1">LOADING</div>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="mt-4 h-1 bg-green-950 rounded-sm overflow-hidden border border-green-500/20">
+            <motion.div
+              className="h-full bg-gradient-to-r from-green-500 via-cyan-400 to-green-500 terminal-glow"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.2, ease: "linear" }}
+              style={{
+                boxShadow: '0 0 10px rgba(34, 197, 94, 0.5)'
+              }}
+            />
+          </div>
+        </motion.div>
+
+        {/* Boot messages */}
+        <div className="absolute top-[180px] bottom-0 left-0 right-0 overflow-hidden">
+          <div className="h-full overflow-y-auto p-6 space-y-0.5 custom-scrollbar">
+            <AnimatePresence mode="popLayout">
+              {bootMessages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ 
+                    opacity: message.type === 'ok' || message.type === 'done' ? 1 : 0.7,
+                    x: 0 
+                  }}
+                  transition={{ duration: 0.1 }}
+                  className={`
+                    ${message.type === 'header' ? 'text-cyan-400 font-bold text-base mb-2 terminal-glow' : ''}
+                    ${message.type === 'ok' ? 'text-green-400 font-semibold terminal-glow' : ''}
+                    ${message.type === 'done' ? 'text-cyan-300 font-semibold text-base mt-2 terminal-glow' : ''}
+                    ${message.type === 'info' ? 'text-green-500/60' : ''}
+                  `}
+                >
+                  {message.text || '\u00A0'}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Blinking cursor */}
+            {bootMessages.length > 0 && !showWelcome && (
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+                className="inline-block w-2 h-4 bg-green-400 ml-1 terminal-glow"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Welcome overlay */}
+        <AnimatePresence>
+          {showWelcome && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            >
+              <div className="text-center">
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 20
+                  }}
+                >
+                  <div className="text-6xl font-bold mb-4 bg-gradient-to-r from-green-400 via-cyan-400 to-green-400 bg-clip-text text-transparent terminal-glow">
+                    ASHIM OS
+                  </div>
+                  <div className="text-green-400/70 text-lg mb-6 terminal-glow">
+                    System Ready • All Services Running
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-cyan-400/60 text-sm">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    >
+                      <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full" />
+                    </motion.div>
+                    <span>Loading Desktop Environment...</span>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Bottom status bar */}
+      <div className="absolute bottom-0 left-0 right-0 bg-green-950/50 border-t border-green-500/20 p-3 flex items-center justify-between text-xs">
+        <div className="flex items-center gap-4 text-green-400/70">
+          <span>TTY1</span>
+          <span className="text-green-500/50">•</span>
+          <span>ashim@portfolio</span>
+          <span className="text-green-500/50">•</span>
+          <span className="text-cyan-400/70">~</span>
+        </div>
+        <div className="flex items-center gap-3 text-green-400/50">
+          <span>F1:Help</span>
+          <span>F2:Setup</span>
+          <span>ESC:Skip</span>
+        </div>
       </div>
     </motion.div>
   )
