@@ -44,12 +44,12 @@ export const APP_METADATA = {
   description: 'Portfolio website of Ashim Rudra Paul - Full Stack Developer & DevOps Engineer',
   keywords: ['Ashim Rudra Paul', 'Software Engineer', 'Full Stack Developer', 'DevOps', 'Portfolio'],
   author: 'Ashim Rudra Paul',
-  siteUrl: 'https://ashim.dev',
+  siteUrl: 'https://dev.ashimrudrapaul.com',
   ogImage: '/og-image.png',
 }
 
 export const SOCIAL_LINKS = {
-  linkedin: 'https://linkedin.com/in/ashimrudrapaul',
+  linkedin: 'https://linkedin.com/in/codewithashim',
   github: 'https://github.com/codewithashim',
   email: 'codewithashim@gmail.com',
 } as const

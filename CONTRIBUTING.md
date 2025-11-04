@@ -49,8 +49,8 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/YOUR_USERNAME/Portfolio.git
-cd Portfolio
+git clone https://github.com/YOUR_USERNAME/Dev-Ashim.git
+cd Dev-Ashim
 
 # Install dependencies
 npm install
