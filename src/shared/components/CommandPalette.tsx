@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Command } from 'cmdk'
 import { User, Briefcase, FileText, Terminal as TerminalIcon, Mail, Moon, Sun } from 'lucide-react'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
-import { AppId } from '@/shared/types'
+import { useKeyboardShortcut } from '@/shared/hooks/useKeyboardShortcut'
+import { analytics } from '@/shared/lib/analytics'
 
 interface CommandItem {
   id: string
@@ -18,36 +19,37 @@ export default function CommandPalette() {
   const [open, setOpen] = useState(false)
   const { openWindow, highContrast, toggleHighContrast } = useDesktopStore()
   
-  useEffect(() => {
-    const handleOpen = () => setOpen(true)
-    window.addEventListener('openCommandPalette', handleOpen)
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setOpen(true)
-      }
-      
-      if (e.key === 'Escape') {
-        setOpen(false)
-      }
-    }
-    
-    window.addEventListener('keydown', handleKeyDown)
-    
-    return () => {
-      window.removeEventListener('openCommandPalette', handleOpen)
-      window.removeEventListener('keydown', handleKeyDown)
-    }
+  const handleOpen = useCallback(() => {
+    setOpen(true)
+    analytics.track('command_palette_opened')
   }, [])
   
-  const commands: CommandItem[] = [
+  const handleClose = useCallback(() => {
+    setOpen(false)
+  }, [])
+  
+  // Keyboard shortcuts
+  useKeyboardShortcut(['Control', 'k'], handleOpen)
+  useKeyboardShortcut(['Meta', 'k'], handleOpen)
+  useKeyboardShortcut(['Escape'], handleClose, { enabled: open })
+  
+  useEffect(() => {
+    const handleOpenEvent = () => handleOpen()
+    window.addEventListener('openCommandPalette', handleOpenEvent)
+    
+    return () => {
+      window.removeEventListener('openCommandPalette', handleOpenEvent)
+    }
+  }, [handleOpen])
+  
+  const commands: CommandItem[] = useMemo(() => [
     {
       id: 'about',
       label: 'Open About',
       icon: User,
       action: () => {
         openWindow('about', 'About')
+        analytics.click('command_palette_item', { command: 'about' })
         setOpen(false)
       },
       keywords: ['profile', 'bio', 'information'],
@@ -58,6 +60,7 @@ export default function CommandPalette() {
       icon: Briefcase,
       action: () => {
         openWindow('projects', 'Projects')
+        analytics.click('command_palette_item', { command: 'projects' })
         setOpen(false)
       },
       keywords: ['work', 'portfolio', 'code'],
@@ -68,6 +71,7 @@ export default function CommandPalette() {
       icon: FileText,
       action: () => {
         openWindow('resume', 'Resume')
+        analytics.click('command_palette_item', { command: 'resume' })
         setOpen(false)
       },
       keywords: ['cv', 'experience', 'skills'],
@@ -78,6 +82,7 @@ export default function CommandPalette() {
       icon: TerminalIcon,
       action: () => {
         openWindow('terminal', 'Terminal')
+        analytics.click('command_palette_item', { command: 'terminal' })
         setOpen(false)
       },
       keywords: ['command', 'shell', 'console'],
@@ -88,6 +93,7 @@ export default function CommandPalette() {
       icon: Mail,
       action: () => {
         openWindow('contact', 'Contact')
+        analytics.click('command_palette_item', { command: 'contact' })
         setOpen(false)
       },
       keywords: ['email', 'reach', 'connect'],
@@ -102,7 +108,7 @@ export default function CommandPalette() {
       },
       keywords: ['theme', 'dark', 'light', 'accessibility'],
     },
-  ]
+  ], [openWindow, highContrast, toggleHighContrast])
   
   if (!open) return null
   
@@ -111,7 +117,7 @@ export default function CommandPalette() {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={() => setOpen(false)}
+        onClick={handleClose}
         aria-hidden="true"
       />
       

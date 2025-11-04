@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useRef, useCallback } from 'react'
 import { FolderOpen, Terminal as TerminalIcon, Settings, RefreshCw, Info } from 'lucide-react'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
+import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useKeyboardShortcut } from '@/shared/hooks/useKeyboardShortcut'
+import { analytics } from '@/shared/lib/analytics'
 
 interface ContextMenuProps {
   x: number
@@ -14,43 +17,34 @@ export default function ContextMenu({ x, y, onClose }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
   const { openWindow } = useDesktopStore()
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        onClose()
-      }
-    }
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEscape)
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [onClose])
+  // Use custom hooks for better code organization
+  useClickOutside(menuRef, onClose)
+  useKeyboardShortcut(['Escape'], onClose)
+  
+  const handleAction = useCallback((action: () => void, actionName: string) => {
+    analytics.click('context_menu_item', { action: actionName })
+    action()
+  }, [])
 
   const menuItems = [
     {
       icon: FolderOpen,
       label: 'Open Files',
       action: () => {
-        openWindow('projects', 'Projects')
-        onClose()
+        handleAction(() => {
+          openWindow('projects', 'Projects')
+          onClose()
+        }, 'open_files')
       }
     },
     {
       icon: TerminalIcon,
       label: 'Open Terminal Here',
       action: () => {
-        openWindow('terminal', 'Terminal')
-        onClose()
+        handleAction(() => {
+          openWindow('terminal', 'Terminal')
+          onClose()
+        }, 'open_terminal')
       }
     },
     { divider: true },
@@ -58,14 +52,18 @@ export default function ContextMenu({ x, y, onClose }: ContextMenuProps) {
       icon: RefreshCw,
       label: 'Change Background',
       action: () => {
-        onClose()
+        handleAction(() => {
+          onClose()
+        }, 'change_background')
       }
     },
     {
       icon: Settings,
       label: 'Display Settings',
       action: () => {
-        onClose()
+        handleAction(() => {
+          onClose()
+        }, 'display_settings')
       }
     },
     { divider: true },
@@ -73,8 +71,10 @@ export default function ContextMenu({ x, y, onClose }: ContextMenuProps) {
       icon: Info,
       label: 'About Ashim OS',
       action: () => {
-        openWindow('about', 'About')
-        onClose()
+        handleAction(() => {
+          openWindow('about', 'About')
+          onClose()
+        }, 'about_os')
       }
     }
   ]

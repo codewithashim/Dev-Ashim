@@ -5,7 +5,7 @@ import { portfolioData } from '@/shared/data/portfolio'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
 
 interface TerminalLine {
-  type: 'input' | 'output' | 'error'
+  type: 'input' | 'output' | 'error' | 'success' | 'warning'
   content: string
 }
 
@@ -13,15 +13,29 @@ interface TerminalAppProps {
   windowId: string
 }
 
+const getWelcomeBanner = () => {
+  const date = new Date()
+  return [
+    'Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 6.8.0-88-generic x86_64)',
+    '',
+    ' * Documentation:  https://help.ubuntu.com',
+    ' * Management:     https://landscape.canonical.com',
+    ' * Support:        https://ubuntu.com/advantage',
+    '',
+    `Last login: ${date.toDateString()} ${date.toTimeString().split(' ')[0]} on pts/0`,
+    '',
+  ]
+}
+
 export default function TerminalApp({ windowId }: TerminalAppProps) {
-  const [lines, setLines] = useState<TerminalLine[]>([
-    { type: 'output', content: 'Ashim OS Terminal v1.0.0' },
-    { type: 'output', content: 'Type "help" for available commands' },
-    { type: 'output', content: '' },
-  ])
+  const [lines, setLines] = useState<TerminalLine[]>(() => {
+    return getWelcomeBanner().map(content => ({ type: 'output' as const, content }))
+  })
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
+  const [_currentDir, _setCurrentDir] = useState('~')
+  const [_suggestions, _setSuggestions] = useState<string[]>([])
   const terminalEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { openWindow } = useDesktopStore()
@@ -34,31 +48,50 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
     inputRef.current?.focus()
   }, [])
   
-  const addLine = (content: string, type: 'input' | 'output' | 'error' = 'output') => {
+  const addLine = (content: string, type: 'input' | 'output' | 'error' | 'success' | 'warning' = 'output') => {
     setLines((prev) => [...prev, { type, content }])
   }
   
-  const addLines = (contents: string[], type: 'output' | 'error' = 'output') => {
+  const addLines = (contents: string[], type: 'output' | 'error' | 'success' | 'warning' = 'output') => {
     setLines((prev) => [...prev, ...contents.map(content => ({ type, content }))])
   }
   
-  const commands: Record<string, () => void> = {
+  const commands: Record<string, (args?: string[]) => void> = {
     help: () => {
       addLines([
         '',
-        'Available commands:',
-        '  help              Show this help message',
-        '  about             Display information about Ashim',
-        '  skills            List technical skills',
-        '  experience        Show work experience',
-        '  projects          List all projects',
-        '  open <project>    Open project details (e.g., open lipika-ai)',
-        '  resume            Display resume',
-        '  download resume   Download resume as PDF',
-        '  contact           Show contact information',
-        '  email             Open email client',
-        '  clear             Clear terminal',
-        '  exit              Close terminal',
+        '╭─ Available Commands ────────────────────────────────────────────╮',
+        '│                                                                  │',
+        '│  System Commands:                                                │',
+        '│    ls              List directory contents                       │',
+        '│    cat <file>      Display file contents                         │',
+        '│    pwd             Print working directory                       │',
+        '│    cd <dir>        Change directory                              │',
+        '│    whoami          Display current user                          │',
+        '│    uname           Show system information                       │',
+        '│    date            Display current date and time                 │',
+        '│    echo <text>     Print text to terminal                        │',
+        '│    clear           Clear terminal screen                         │',
+        '│    history         Show command history                          │',
+        '│    exit            Close terminal window                         │',
+        '│                                                                  │',
+        '│  Portfolio Commands:                                             │',
+        '│    about           About me                                      │',
+        '│    skills          Technical skills and expertise                │',
+        '│    experience      Work experience                               │',
+        '│    projects        Project portfolio                             │',
+        '│    resume          View resume                                   │',
+        '│    contact         Contact information                           │',
+        '│    neofetch        System information display                    │',
+        '│                                                                  │',
+        '│  Special Commands:                                               │',
+        '│    open <project>  Open project details                          │',
+        '│    download        Download resume as PDF                        │',
+        '│    email           Open email client                             │',
+        '│                                                                  │',
+        '╰──────────────────────────────────────────────────────────────────╯',
+        '',
+        'Tip: Use Tab for autocomplete, ↑/↓ for command history',
         '',
       ])
     },
@@ -206,7 +239,9 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
     addLine(`$ ${trimmedCmd}`, 'input')
     
     // Parse command
-    const [command, ...args] = trimmedCmd.toLowerCase().split(' ')
+    const parts = trimmedCmd.toLowerCase().split(' ')
+    const command = parts[0] || ''
+    const args = parts.slice(1)
     
     // Handle special commands
     if (command === 'open' && args.length > 0) {
@@ -274,7 +309,10 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
       if (history.length > 0) {
         const newIndex = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1)
         setHistoryIndex(newIndex)
-        setInput(history[newIndex])
+        const historyItem = history[newIndex]
+        if (historyItem !== undefined) {
+          setInput(historyItem)
+        }
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -285,7 +323,10 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
           setInput('')
         } else {
           setHistoryIndex(newIndex)
-          setInput(history[newIndex])
+          const historyItem = history[newIndex]
+          if (historyItem !== undefined) {
+            setInput(historyItem)
+          }
         }
       }
     }
@@ -320,7 +361,7 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent outline-none text-os-text caret-os-accent-teal"
+            className="flex-1 bg-transparent outline-none border-none focus:outline-none focus:ring-0 focus:border-transparent text-os-text caret-os-accent-teal"
             spellCheck={false}
             autoComplete="off"
             aria-label="Terminal input"

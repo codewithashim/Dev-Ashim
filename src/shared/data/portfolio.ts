@@ -6,8 +6,8 @@ export const portfolioData: PortfolioData = {
   phone: '+8801740-737445',
   email: 'codewithashim@gmail.com',
   location: 'Sylhet, Bangladesh',
-  portfolio: 'https://ashim.dev',
-  linkedin: 'https://linkedin.com/in/ashimrudrapaul',
+  portfolio: 'https://ashimrudrapaul.com',
+  linkedin: 'https://linkedin.com/in/codewithashim',
   github: 'https://github.com/codewithashim',
   
   about: [

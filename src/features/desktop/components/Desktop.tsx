@@ -165,7 +165,7 @@ export default function Desktop() {
       <Topbar />
       
       {/* Workspace */}
-      <main className="flex-1 relative overflow-hidden" role="main">
+      <main className="flex-1 relative" style={{ overflow: 'hidden', minHeight: 0 }} role="main">
         {windows.map((window) => {
           const AppComponent = appComponents[window.appId as AppId]
           return (
@@ -174,31 +174,6 @@ export default function Desktop() {
             </Window>
           )
         })}
-        
-        {/* Welcome Message */}
-        {windows.length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center text-center px-4">
-            <div className="max-w-2xl glass-panel p-12 rounded-2xl">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-os-accent-green to-os-accent-teal bg-clip-text text-transparent">
-                Welcome to Ashim OS
-              </h1>
-              <p className="text-lg text-white/90 mb-8">
-                Click an app in the dock below to get started, or press{' '}
-                <kbd className="px-2 py-1 bg-black/40 border border-white/30 rounded text-sm font-mono text-white">
-                  `
-                </kbd>{' '}
-                to open the terminal
-              </p>
-              <div className="flex items-center justify-center space-x-4 text-sm text-white/80">
-                <span>💡 Press</span>
-                <kbd className="px-2 py-1 bg-black/40 border border-white/30 rounded font-mono text-white">
-                  Cmd/Ctrl + K
-                </kbd>
-                <span>for quick commands</span>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
       
       {/* Dock */}

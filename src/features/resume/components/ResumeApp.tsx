@@ -1,7 +1,7 @@
 'use client'
 
 import { portfolioData } from '@/shared/data/portfolio'
-import { Download, Briefcase, GraduationCap } from 'lucide-react'
+import { Download, GraduationCap } from 'lucide-react'
 
 export default function ResumeApp() {
   const handleDownload = () => {

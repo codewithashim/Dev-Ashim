@@ -15,7 +15,6 @@ interface BootMessage {
 
 export default function BootLoader({ onBootComplete }: BootLoaderProps) {
   const [bootMessages, setBootMessages] = useState<BootMessage[]>([])
-  const [currentIndex, setCurrentIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const [showWelcome, setShowWelcome] = useState(false)
 
@@ -79,7 +78,6 @@ export default function BootLoader({ onBootComplete }: BootLoaderProps) {
         
         if (isMounted) {
           setBootMessages(prev => [...prev, message])
-          setCurrentIndex(index)
           setProgress(((index + 1) / messages.length) * 100)
           index++
         }
