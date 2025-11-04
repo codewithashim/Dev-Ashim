@@ -13,13 +13,6 @@ interface TerminalAppProps {
   windowId: string
 }
 
-interface FileSystemNode {
-  type: 'file' | 'directory'
-  content?: string
-}
-
-type FileSystem = Record<string, FileSystemNode>
-
 const getWelcomeBanner = () => {
   const date = new Date()
   return [
@@ -41,21 +34,11 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
-  const [currentDir, setCurrentDir] = useState('~')
-  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [_currentDir, _setCurrentDir] = useState('~')
+  const [_suggestions, _setSuggestions] = useState<string[]>([])
   const terminalEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { openWindow } = useDesktopStore()
-  
-  // Simulated file system
-  const fileSystem: FileSystem = {
-    '~/README.md': { type: 'file', content: 'Welcome to Ashim\'s Portfolio Terminal!\nType "help" to see available commands.' },
-    '~/about.txt': { type: 'file', content: portfolioData.about.join('\n') },
-    '~/resume.txt': { type: 'file', content: `${portfolioData.name}\n${portfolioData.title}\n\nEmail: ${portfolioData.email}` },
-    '~/Documents': { type: 'directory' },
-    '~/Projects': { type: 'directory' },
-    '~/Downloads': { type: 'directory' },
-  }
   
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -72,14 +55,6 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
   const addLines = (contents: string[], type: 'output' | 'error' | 'success' | 'warning' = 'output') => {
     setLines((prev) => [...prev, ...contents.map(content => ({ type, content }))])
   }
-  
-  const getPrompt = () => `${portfolioData.name.toLowerCase().replace(/\s+/g, '')}@portfolio:${currentDir}$`
-  
-  const allCommands = [
-    'help', 'about', 'skills', 'experience', 'projects', 'resume', 'contact', 'email',
-    'ls', 'cat', 'pwd', 'cd', 'whoami', 'uname', 'date', 'echo', 'clear', 'history',
-    'neofetch', 'tree', 'open', 'download', 'exit', 'sudo'
-  ]
   
   const commands: Record<string, (args?: string[]) => void> = {
     help: () => {
