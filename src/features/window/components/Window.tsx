@@ -95,6 +95,14 @@ function Window({ window, children }: WindowProps) {
     maximizeWindow(window.id)
   }, [maximizeWindow, window.id])
   
+  const handleDoubleClick = useCallback(() => {
+    if (!window.isMaximized) {
+      maximizeWindow(window.id)
+    } else {
+      maximizeWindow(window.id) // Toggle maximize
+    }
+  }, [maximizeWindow, window.id, window.isMaximized])
+  
   const handleFocus = useCallback(() => {
     focusWindow(window.id)
   }, [focusWindow, window.id])
@@ -103,81 +111,97 @@ function Window({ window, children }: WindowProps) {
     return null
   }
   
-  const windowStyle = window.isMaximized
-    ? { x: 0, y: 0, width: '100vw', height: 'calc(100vh - 7rem)' }
-    : {
-        x: window.position.x,
-        y: window.position.y,
-        width: window.size.width,
-        height: window.size.height,
-      }
-  
   return (
     <motion.div
       ref={windowRef}
       className={`absolute window-shadow ${isDragging || isResizing ? 'select-none' : ''}`}
       style={{
         zIndex: window.zIndex,
-        ...windowStyle,
       }}
       initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{ 
+        scale: 1, 
+        opacity: 1,
+        x: window.position.x,
+        y: window.position.y,
+        width: window.isMaximized ? '100vw' : window.size.width,
+        height: window.isMaximized ? 'calc(100vh - 7rem)' : window.size.height,
+      }}
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ duration: WINDOW_CONFIG.dragDelay || 0.15 }}
       onClick={handleFocus}
+      drag={!window.isMaximized}
+      dragMomentum={false}
+      dragElastic={0}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
-      <div className="glass-panel rounded-xl overflow-hidden h-full flex flex-col border-white/10 shadow-2xl">
-        {/* Title Bar */}
-        <motion.div
-          className="flex items-center justify-between px-4 py-2.5 bg-black/40 backdrop-blur-xl border-b border-white/10 cursor-move"
-          drag={!window.isMaximized}
-          dragMomentum={false}
-          dragElastic={0}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
+      <div className={`rounded-xl overflow-hidden h-full flex flex-col border shadow-2xl ${
+        window.isMaximized ? 'rounded-none border-none' : 'border-white/20'
+      }`}
+      style={{
+        background: 'rgba(25, 25, 25, 0.95)',
+        backdropFilter: 'blur(30px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+      }}
+      >
+        {/* Title Bar - Ubuntu Style */}
+        <div
+          className={`flex items-center justify-between px-3 py-2 border-b border-white/10 select-none ${
+            window.isMaximized ? 'cursor-default' : 'cursor-move'
+          }`}
+          style={{
+            background: 'rgba(40, 40, 40, 0.95)',
+            backdropFilter: 'blur(20px)',
+          }}
+          onDoubleClick={handleDoubleClick}
           role="banner"
         >
-          <div className="flex items-center space-x-3 flex-1 min-w-0">
-            <div className="w-3 h-3 rounded-sm bg-gradient-to-br from-os-accent-green to-os-accent-teal" />
-            <span className="text-sm font-medium truncate text-white">{window.title}</span>
-          </div>
-          
-          <div className="flex items-center space-x-1" role="group" aria-label="Window controls">
+          {/* Ubuntu-style window controls on the LEFT */}
+          <div className="flex items-center space-x-2" role="group" aria-label="Window controls">
+            <button
+              onClick={handleClose}
+              className="w-3 h-3 rounded-full bg-red-500/90 hover:bg-red-500 transition-colors flex items-center justify-center group"
+              aria-label="Close window"
+              title="Close"
+              type="button"
+            >
+              <X className="w-2 h-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-900" aria-hidden="true" strokeWidth={3} />
+            </button>
+            
             <button
               onClick={handleMinimize}
-              className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/70 hover:text-white"
+              className="w-3 h-3 rounded-full bg-yellow-500/90 hover:bg-yellow-500 transition-colors flex items-center justify-center group"
               aria-label="Minimize window"
               title="Minimize"
               type="button"
             >
-              <Minus className="w-3.5 h-3.5" aria-hidden="true" />
+              <Minus className="w-2 h-2 opacity-0 group-hover:opacity-100 transition-opacity text-yellow-900" aria-hidden="true" strokeWidth={3} />
             </button>
             
             <button
               onClick={handleMaximize}
-              className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/70 hover:text-white"
+              className="w-3 h-3 rounded-full bg-emerald-500/90 hover:bg-emerald-500 transition-colors flex items-center justify-center group"
               aria-label={window.isMaximized ? "Restore window" : "Maximize window"}
               title={window.isMaximized ? "Restore" : "Maximize"}
               type="button"
             >
               {window.isMaximized ? (
-                <Square className="w-3.5 h-3.5" aria-hidden="true" />
+                <Square className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-900" aria-hidden="true" strokeWidth={3} />
               ) : (
-                <Maximize2 className="w-3.5 h-3.5" aria-hidden="true" />
+                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-900" aria-hidden="true" strokeWidth={3} />
               )}
             </button>
-            
-            <button
-              onClick={handleClose}
-              className="p-1.5 hover:bg-red-500/20 hover:text-red-400 rounded transition-colors text-white/70"
-              aria-label="Close window"
-              title="Close"
-              type="button"
-            >
-              <X className="w-3.5 h-3.5" aria-hidden="true" />
-            </button>
           </div>
-        </motion.div>
+          
+          {/* Window Title - Centered */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-2 pointer-events-none">
+            <span className="text-[13px] font-medium text-white/90">{window.title}</span>
+          </div>
+          
+          {/* Right side - Empty for balance (Ubuntu style) */}
+          <div className="w-20" />
+        </div>
         
         {/* Content */}
         <div className="flex-1 overflow-hidden bg-os-bg/50">

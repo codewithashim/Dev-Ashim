@@ -22,22 +22,32 @@
     overflow: hidden;
   }
   
-  /* Scrollbar styling */
+  /* Ubuntu-style Scrollbar styling */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-os-bg;
+    background: rgba(0, 0, 0, 0.1);
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-os-border rounded;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-os-text-muted;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  
+  ::-webkit-scrollbar-thumb:active {
+    background: rgba(255, 255, 255, 0.4);
   }
   
   /* Focus styles for accessibility */
