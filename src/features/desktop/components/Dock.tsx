@@ -1,8 +1,10 @@
 'use client'
 
-import { User, Briefcase, FileText, Terminal as TerminalIcon, Mail } from 'lucide-react'
+import { useCallback, useMemo, memo } from 'react'
+import { User, Briefcase, FileText, Terminal as TerminalIcon, Mail, Grid } from 'lucide-react'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
 import { AppId } from '@/shared/types'
+import { analytics } from '@/shared/lib/analytics'
 
 interface DockApp {
   id: AppId
@@ -19,12 +21,17 @@ const apps: DockApp[] = [
   { id: 'contact', name: 'Contact', icon: Mail, color: 'from-pink-500 to-pink-600' },
 ]
 
-export default function Dock() {
+function Dock() {
   const { openWindow, windows } = useDesktopStore()
   
-  const isAppOpen = (appId: AppId) => {
+  const isAppOpen = useCallback((appId: AppId) => {
     return windows.some(w => w.appId === appId && !w.isMinimized)
-  }
+  }, [windows])
+  
+  const handleOpenApp = useCallback((appId: AppId, name: string) => {
+    openWindow(appId, name)
+    analytics.click('dock_app', { app_id: appId })
+  }, [openWindow])
   
   return (
     <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-50">
@@ -37,14 +44,16 @@ export default function Dock() {
             return (
               <button
                 key={app.id}
-                onClick={() => openWindow(app.id, app.name)}
+                onClick={() => handleOpenApp(app.id, app.name)}
                 className={`group relative p-2.5 rounded-lg transition-all duration-200 hover:bg-white/20 ${
                   isOpen ? 'bg-white/10' : ''
                 }`}
                 aria-label={`Open ${app.name}`}
+                aria-pressed={isOpen}
                 title={app.name}
+                type="button"
               >
-                <Icon className={`w-5 h-5 relative z-10 ${isOpen ? 'text-white' : 'text-white/80'}`} />
+                <Icon className={`w-5 h-5 relative z-10 ${isOpen ? 'text-white' : 'text-white/80'}`} aria-hidden="true" />
                 
                 {/* Active indicator - dot below */}
                 {isOpen && (
@@ -67,8 +76,9 @@ export default function Dock() {
             className="p-2.5 rounded-lg hover:bg-white/20 transition-colors"
             aria-label="Show applications"
             title="Show Applications"
+            type="button"
           >
-            <div className="grid grid-cols-3 gap-0.5">
+            <div className="grid grid-cols-3 gap-0.5" aria-hidden="true">
               {[...Array(9)].map((_, i) => (
                 <div key={i} className="w-1 h-1 bg-white/80 rounded-full" />
               ))}
@@ -79,4 +89,6 @@ export default function Dock() {
     </div>
   )
 }
+
+export default memo(Dock)
 

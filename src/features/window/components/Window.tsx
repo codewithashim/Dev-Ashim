@@ -1,17 +1,19 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useCallback, useState, memo } from 'react'
 import { Minus, Square, X, Maximize2 } from 'lucide-react'
 import { motion, PanInfo } from 'framer-motion'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
 import { WindowState } from '@/shared/types'
+import { WINDOW_CONFIG } from '@/shared/constants'
+import { clamp } from '@/shared/utils'
 
 interface WindowProps {
   window: WindowState
   children: React.ReactNode
 }
 
-export default function Window({ window, children }: WindowProps) {
+function Window({ window, children }: WindowProps) {
   const windowRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
@@ -25,27 +27,20 @@ export default function Window({ window, children }: WindowProps) {
     updateWindowSize,
   } = useDesktopStore()
   
-  const handleDragStart = () => {
+  const handleDragStart = useCallback(() => {
     setIsDragging(true)
     focusWindow(window.id)
-  }
+  }, [focusWindow, window.id])
   
-  const handleDragEnd = (_: any, info: PanInfo) => {
+  const handleDragEnd = useCallback((_event: any, info: PanInfo) => {
     setIsDragging(false)
     const newX = window.position.x + info.offset.x
     const newY = window.position.y + info.offset.y
     
-    // Constrain to viewport
-    const maxX = typeof globalThis !== 'undefined' ? globalThis.innerWidth - 200 : 1200
-    const maxY = typeof globalThis !== 'undefined' ? globalThis.innerHeight - 100 : 800
-    
-    updateWindowPosition(window.id, {
-      x: Math.max(0, Math.min(newX, maxX)),
-      y: Math.max(0, Math.min(newY, maxY)),
-    })
-  }
+    updateWindowPosition(window.id, { x: newX, y: newY })
+  }, [window.position.x, window.position.y, window.id, updateWindowPosition])
   
-  const handleResize = (e: React.MouseEvent) => {
+  const handleResize = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     setIsResizing(true)
     focusWindow(window.id)
@@ -59,11 +54,21 @@ export default function Window({ window, children }: WindowProps) {
       const deltaX = moveEvent.clientX - startX
       const deltaY = moveEvent.clientY - startY
       
-      const maxWidth = typeof globalThis !== 'undefined' ? globalThis.innerWidth - window.position.x : 1200
-      const maxHeight = typeof globalThis !== 'undefined' ? globalThis.innerHeight - window.position.y : 800
+      const viewportWidth = typeof globalThis !== 'undefined' ? globalThis.innerWidth : 1920
+      const viewportHeight = typeof globalThis !== 'undefined' ? globalThis.innerHeight : 1080
+      const maxWidth = viewportWidth - window.position.x
+      const maxHeight = viewportHeight - window.position.y
       
-      const newWidth = Math.max(400, Math.min(startWidth + deltaX, maxWidth))
-      const newHeight = Math.max(300, Math.min(startHeight + deltaY, maxHeight))
+      const newWidth = clamp(
+        startWidth + deltaX,
+        WINDOW_CONFIG.minWidth,
+        maxWidth
+      )
+      const newHeight = clamp(
+        startHeight + deltaY,
+        WINDOW_CONFIG.minHeight,
+        maxHeight
+      )
       
       updateWindowSize(window.id, { width: newWidth, height: newHeight })
     }
@@ -76,7 +81,23 @@ export default function Window({ window, children }: WindowProps) {
     
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
-  }
+  }, [window.id, window.size.width, window.size.height, window.position.x, window.position.y, focusWindow, updateWindowSize])
+  
+  const handleClose = useCallback(() => {
+    closeWindow(window.id)
+  }, [closeWindow, window.id])
+  
+  const handleMinimize = useCallback(() => {
+    minimizeWindow(window.id)
+  }, [minimizeWindow, window.id])
+  
+  const handleMaximize = useCallback(() => {
+    maximizeWindow(window.id)
+  }, [maximizeWindow, window.id])
+  
+  const handleFocus = useCallback(() => {
+    focusWindow(window.id)
+  }, [focusWindow, window.id])
   
   if (window.isMinimized) {
     return null
@@ -102,8 +123,8 @@ export default function Window({ window, children }: WindowProps) {
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.9, opacity: 0 }}
-      transition={{ duration: 0.15 }}
-      onClick={() => focusWindow(window.id)}
+      transition={{ duration: WINDOW_CONFIG.dragDelay || 0.15 }}
+      onClick={handleFocus}
     >
       <div className="glass-panel rounded-xl overflow-hidden h-full flex flex-col border-white/10 shadow-2xl">
         {/* Title Bar */}
@@ -123,34 +144,37 @@ export default function Window({ window, children }: WindowProps) {
           
           <div className="flex items-center space-x-1" role="group" aria-label="Window controls">
             <button
-              onClick={() => minimizeWindow(window.id)}
+              onClick={handleMinimize}
               className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/70 hover:text-white"
               aria-label="Minimize window"
               title="Minimize"
+              type="button"
             >
-              <Minus className="w-3.5 h-3.5" />
+              <Minus className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
             
             <button
-              onClick={() => maximizeWindow(window.id)}
+              onClick={handleMaximize}
               className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/70 hover:text-white"
               aria-label={window.isMaximized ? "Restore window" : "Maximize window"}
               title={window.isMaximized ? "Restore" : "Maximize"}
+              type="button"
             >
               {window.isMaximized ? (
-                <Square className="w-3.5 h-3.5" />
+                <Square className="w-3.5 h-3.5" aria-hidden="true" />
               ) : (
-                <Maximize2 className="w-3.5 h-3.5" />
+                <Maximize2 className="w-3.5 h-3.5" aria-hidden="true" />
               )}
             </button>
             
             <button
-              onClick={() => closeWindow(window.id)}
+              onClick={handleClose}
               className="p-1.5 hover:bg-red-500/20 hover:text-red-400 rounded transition-colors text-white/70"
               aria-label="Close window"
               title="Close"
+              type="button"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </div>
         </motion.div>
@@ -176,4 +200,20 @@ export default function Window({ window, children }: WindowProps) {
     </motion.div>
   )
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export default memo(Window, (prevProps, nextProps) => {
+  // Only re-render if window state changes
+  return (
+    prevProps.window.id === nextProps.window.id &&
+    prevProps.window.position.x === nextProps.window.position.x &&
+    prevProps.window.position.y === nextProps.window.position.y &&
+    prevProps.window.size.width === nextProps.window.size.width &&
+    prevProps.window.size.height === nextProps.window.size.height &&
+    prevProps.window.isMinimized === nextProps.window.isMinimized &&
+    prevProps.window.isMaximized === nextProps.window.isMaximized &&
+    prevProps.window.zIndex === nextProps.window.zIndex &&
+    prevProps.window.title === nextProps.window.title
+  )
+})
 

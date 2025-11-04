@@ -1,59 +1,40 @@
-# Ashim OS - Linux-Inspired Portfolio
+# Ashim OS - Portfolio Website
 
-A stunning, interactive portfolio website that emulates a lightweight Linux desktop OS experience. Built with Next.js, React, TypeScript, and TailwindCSS.
+A modern, interactive portfolio website designed as an operating system interface. Built with Next.js 14, TypeScript, and Tailwind CSS.
 
-![Ashim OS Preview](https://via.placeholder.com/1200x600/0b0f14/22c55e?text=Ashim+OS+Portfolio)
+![Ashim OS](./public/og-image.png)
 
-## ✨ Features
+## 🚀 Features
 
-### Desktop Environment
-- **Native OS Feel**: Draggable, resizable windows with minimize, maximize, and close controls
-- **Application Dock**: Quick access to all portfolio apps with visual feedback
-- **System Topbar**: Live clock, system status icons, and theme controls
-- **Command Palette**: Quick command access with `Cmd/Ctrl+K`
+- **OS-Style Interface**: Interactive desktop environment with window management
+- **Draggable Windows**: Fully functional window system with minimize, maximize, and close
+- **Terminal Emulator**: Built-in terminal with custom commands
+- **Command Palette**: Quick access to all features via keyboard shortcuts (Cmd/Ctrl + K)
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Dark Mode**: High contrast mode for better accessibility
+- **Performance Optimized**: React.memo, useCallback, and lazy loading for optimal performance
+- **SEO Optimized**: Complete meta tags and Open Graph support
+- **Analytics Ready**: Built-in analytics and error tracking structure
+- **Accessibility**: WCAG compliant with ARIA labels and keyboard navigation
 
-### Interactive Terminal
-A fully functional pseudo-terminal with built-in commands:
-- `help` - Show all available commands
-- `about` - Display biography and information
-- `skills` - List categorized technical skills
-- `experience` - Show work history
-- `projects` - List all projects
-- `open <project-id>` - Open project details window
-- `resume` - Display full resume
-- `download resume` - Download resume as PDF
-- `contact` - Show contact information
-- `email` - Open email client
-- `clear` - Clear terminal
-- `exit` - Close terminal window
+## 🛠️ Tech Stack
 
-### Portfolio Apps
-- **About**: Personal information, skills overview, and education
-- **Projects**: Detailed showcase of notable projects with expandable details
-- **Resume**: Professional resume with download option
-- **Contact**: Contact form and social links
-- **Terminal**: Interactive command-line interface
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand with persistence
+- **Animations**: Framer Motion
+- **UI Components**: Lucide React Icons, CMDK
+- **Code Quality**: ESLint, Prettier
 
-### Accessibility & UX
-- ✅ Semantic HTML with proper ARIA labels
-- ✅ Keyboard navigation support
-- ✅ Focus styles for keyboard users
-- ✅ High contrast mode toggle
-- ✅ Screen reader friendly
-- ✅ Responsive design
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ 
-- npm, yarn, or pnpm
-
-### Installation
+## 📦 Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/codewithashim/portfolio.git
-cd portfolio
+git clone https://github.com/codewithashim/Portfolio.git
+
+# Navigate to the project directory
+cd Portfolio
 
 # Install dependencies
 npm install
@@ -61,12 +42,11 @@ npm install
 yarn install
 # or
 pnpm install
-```
 
-### Development
+# Create environment file
+cp .env.example .env.local
 
-```bash
-# Start development server
+# Run development server
 npm run dev
 # or
 yarn dev
@@ -74,257 +54,188 @@ yarn dev
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Build for Production
-
-```bash
-# Create optimized production build
-npm run build
-# or
-yarn build
-# or
-pnpm build
-
-# Start production server
-npm start
-# or
-yarn start
-# or
-pnpm start
-```
-
-### Static Export (Optional)
-
-```bash
-# Generate static HTML export
-npm run export
-# or
-yarn export
-# or
-pnpm export
-```
-
-The static files will be in the `out/` directory.
-
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```
-portfolio/
-├── app/
-│   ├── layout.tsx          # Root layout with metadata
-│   ├── page.tsx            # Main page component
-│   └── globals.css         # Global styles
-├── components/
-│   ├── Desktop.tsx         # Main desktop shell
-│   ├── Topbar.tsx          # System topbar
-│   ├── Dock.tsx            # Application dock
-│   ├── Window.tsx          # Draggable window component
-│   ├── CommandPalette.tsx  # Quick command interface
-│   └── apps/
-│       ├── AboutApp.tsx    # About application
-│       ├── ProjectsApp.tsx # Projects showcase
-│       ├── ResumeApp.tsx   # Resume viewer
-│       ├── ContactApp.tsx  # Contact form
-│       └── TerminalApp.tsx # Interactive terminal
-├── hooks/
-│   └── useDesktopStore.ts  # Zustand state management
-├── types/
-│   └── index.ts            # TypeScript type definitions
-├── data/
-│   └── portfolio.ts        # Portfolio content data
-├── public/
-│   ├── favicon.ico         # Site favicon
-│   └── logo.svg            # Logo asset
-└── package.json            # Dependencies and scripts
+src/
+├── app/                    # Next.js app directory
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout with metadata
+│   └── page.tsx           # Home page
+├── features/              # Feature-based modules
+│   ├── about/            # About application
+│   ├── boot/             # Boot loader animation
+│   ├── contact/          # Contact application
+│   ├── desktop/          # Desktop environment
+│   ├── projects/         # Projects showcase
+│   ├── resume/           # Resume viewer
+│   ├── terminal/         # Terminal emulator
+│   └── window/           # Window management
+└── shared/               # Shared resources
+    ├── components/       # Reusable components
+    │   ├── CommandPalette.tsx
+    │   ├── ContextMenu.tsx
+    │   └── ErrorBoundary.tsx
+    ├── constants/        # App constants
+    ├── data/            # Portfolio data
+    ├── hooks/           # Custom React hooks
+    │   ├── useClickOutside.ts
+    │   ├── useDesktopStore.ts
+    │   ├── useKeyboardShortcut.ts
+    │   ├── useLocalStorage.ts
+    │   └── useWindowSize.ts
+    ├── lib/             # Utility libraries
+    │   ├── analytics.ts
+    │   └── logger.ts
+    ├── types/           # TypeScript types
+    └── utils/           # Utility functions
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_LOG_LEVEL=info
+```
+
+### Portfolio Data
+
+Update your information in `src/shared/data/portfolio.ts`:
+
+```typescript
+export const portfolioData: PortfolioData = {
+  name: 'Your Name',
+  title: 'Your Title',
+  email: 'your.email@example.com',
+  // ... other fields
+}
 ```
 
 ## 🎨 Customization
 
-### Update Portfolio Content
+### Theme Colors
 
-Edit `data/portfolio.ts` to update:
-- Personal information
-- Skills and technologies
-- Work experience
-- Projects
-- Education
+Edit colors in `tailwind.config.ts` or `src/app/globals.css`:
 
-### Modify Theme Colors
-
-Update colors in `tailwind.config.ts`:
-
-```typescript
-colors: {
-  'os-bg': '#0b0f14',           // Background
-  'os-surface': '#161b22',       // Surface elements
-  'os-border': '#30363d',        // Borders
-  'os-text': '#c9d1d9',          // Text
-  'os-text-muted': '#8b949e',    // Muted text
-  'os-accent-green': '#22c55e',  // Primary accent
-  'os-accent-teal': '#14b8a6',   // Secondary accent
-  // Add more custom colors
+```css
+:root {
+  --os-bg: #0b0f14;
+  --os-accent-green: #22c55e;
+  --os-accent-teal: #14b8a6;
 }
 ```
 
-### Add New Terminal Commands
+### Adding New Apps
 
-Edit `components/apps/TerminalApp.tsx` and add to the `commands` object:
+1. Create a new feature directory under `src/features/`
+2. Add the app component
+3. Register it in `src/shared/types/index.ts`
+4. Add to the dock in `src/features/desktop/components/Dock.tsx`
 
-```typescript
-const commands: Record<string, () => void> = {
-  // ... existing commands
-  mycommand: () => {
-    addLines(['Your command output here'])
-  }
-}
+## 📊 Analytics & Monitoring
+
+The project includes built-in structure for:
+
+- **Analytics**: Page views, events, user interactions
+- **Error Tracking**: Error boundary and logging system
+- **Performance Monitoring**: Ready for integration with services like Sentry, Google Analytics, or Plausible
+
+To enable analytics, implement the TODO sections in:
+- `src/shared/lib/analytics.ts`
+- `src/shared/lib/logger.ts`
+
+## 🔑 Keyboard Shortcuts
+
+- `Cmd/Ctrl + K`: Open command palette
+- `` ` ``: Open terminal
+- `Esc`: Close modals and dialogs
+- `Arrow Keys`: Navigate in command palette
+
+## 🧪 Testing
+
+```bash
+# Run tests (when implemented)
+npm test
+
+# Run linting
+npm run lint
+
+# Type checking
+npm run type-check
 ```
 
-## 🌐 Deployment
+## 📦 Building for Production
+
+```bash
+# Create production build
+npm run build
+
+# Start production server
+npm start
+```
+
+## 🚀 Deployment
 
 ### Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/codewithashim/Portfolio)
 
-1. Push your code to GitHub
-2. Import project in Vercel
-3. Deploy with one click
+### Other Platforms
 
-### Netlify
+The project can be deployed to any platform that supports Next.js:
 
-1. Build command: `npm run build`
-2. Publish directory: `.next`
-3. Deploy
+- **Netlify**: Use `next build` as build command
+- **AWS Amplify**: Configure build settings for Next.js
+- **Docker**: Create a Dockerfile for containerized deployment
 
-### Docker
+## 🤝 Contributing
 
-```dockerfile
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-FROM node:18-alpine AS runner
-WORKDIR /app
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-EXPOSE 3000
-CMD ["node", "server.js"]
-```
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### Static Hosting (GitHub Pages, S3, etc.)
-
-```bash
-npm run export
-# Upload contents of 'out/' directory
-```
-
-## 🧪 Testing Checklist
-
-### Functionality Tests
-- [ ] All dock apps open correctly
-- [ ] Windows can be dragged to new positions
-- [ ] Windows can be resized from corner
-- [ ] Minimize button hides window
-- [ ] Maximize button toggles fullscreen
-- [ ] Close button removes window
-- [ ] Multiple windows can be opened simultaneously
-- [ ] Windows layer correctly (z-index)
-
-### Terminal Tests
-- [ ] Terminal opens with ` key
-- [ ] All commands execute correctly:
-  - [ ] `help` shows command list
-  - [ ] `about` displays bio
-  - [ ] `skills` shows skills
-  - [ ] `experience` shows work history
-  - [ ] `projects` lists projects
-  - [ ] `open <project>` opens project window
-  - [ ] `resume` displays resume
-  - [ ] `contact` shows contact info
-  - [ ] `email` opens mailto link
-  - [ ] `clear` clears terminal
-  - [ ] `exit` closes terminal
-- [ ] Command history works (↑/↓ arrows)
-- [ ] Auto-scroll to bottom on new output
-
-### Command Palette Tests
-- [ ] Opens with `Cmd/Ctrl+K`
-- [ ] Closes with `Esc`
-- [ ] Search filters commands
-- [ ] Can navigate with arrow keys
-- [ ] Enter key executes command
-- [ ] Opens correct app for each command
-
-### UI/UX Tests
-- [ ] Clock updates every minute
-- [ ] High contrast mode toggles correctly
-- [ ] Dock shows active app indicators
-- [ ] Hover effects work on all interactive elements
-- [ ] Welcome message shows when no windows open
-
-### Accessibility Tests
-- [ ] All interactive elements keyboard accessible
-- [ ] Tab navigation works correctly
-- [ ] Focus indicators visible
-- [ ] ARIA labels present on controls
-- [ ] Screen reader announces content changes
-- [ ] High contrast mode improves readability
-
-### Responsive Tests
-- [ ] Layout adapts to tablet screens (768px)
-- [ ] Layout adapts to mobile screens (375px)
-- [ ] Windows constrained to viewport
-- [ ] Touch interactions work on mobile
-
-### Browser Compatibility
-- [ ] Chrome/Edge (latest)
-- [ ] Firefox (latest)
-- [ ] Safari (latest)
-- [ ] Mobile Safari (iOS)
-- [ ] Chrome Mobile (Android)
-
-### Performance Tests
-- [ ] Initial page load < 3 seconds
-- [ ] Window animations smooth (60fps)
-- [ ] Terminal command execution instant
-- [ ] No memory leaks after extended use
-- [ ] Lighthouse score > 90
-
-## 🛠️ Technologies Used
-
-- **Framework**: Next.js 14
-- **UI Library**: React 18
-- **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **Animations**: Framer Motion
-- **State Management**: Zustand
-- **Icons**: Lucide React
-- **Command Palette**: cmdk
-
-## 📝 License
+## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
 
 ## 👤 Author
 
 **Ashim Rudra Paul**
-- Email: codewithashim@gmail.com
+
+- Website: [ashim.dev](https://ashim.dev)
 - GitHub: [@codewithashim](https://github.com/codewithashim)
-- LinkedIn: [Ashim Rudra Paul](https://linkedin.com/in/ashimrudrapaul)
+- LinkedIn: [ashimrudrapaul](https://linkedin.com/in/ashimrudrapaul)
 
-## 🤝 Contributing
+## 🙏 Acknowledgments
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/codewithashim/portfolio/issues).
+- Inspired by modern OS interfaces (macOS, Ubuntu)
+- Icons by [Lucide](https://lucide.dev/)
+- Animations by [Framer Motion](https://www.framer.com/motion/)
+- Built with [Next.js](https://nextjs.org/)
 
-## ⭐ Show Your Support
+## 📝 Changelog
 
-Give a ⭐️ if you like this project!
+### Version 1.0.0 (Current)
+
+- ✨ Initial release
+- 🎨 OS-style interface with window management
+- ⚡ Performance optimizations
+- ♿ Accessibility improvements
+- 🔍 SEO enhancements
+- 📊 Analytics structure
+- 🐛 Error boundary implementation
 
 ---
 
-**Note**: This is a portfolio website template. The design and functionality are optimized for desktop browsers. Mobile support is included but the experience is best on larger screens.
-
+Made with ❤️ by Ashim Rudra Paul

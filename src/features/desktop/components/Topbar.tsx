@@ -1,28 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Moon, Sun, Volume2, Wifi, Battery, Calendar, Activity, Power, ChevronDown } from 'lucide-react'
+import { useState, useEffect, useCallback, useMemo, memo } from 'react'
+import { Moon, Sun, Volume2, Wifi, Battery, Activity, Power, ChevronDown } from 'lucide-react'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
+import { formatTime, formatDate } from '@/shared/utils'
 
-export default function Topbar() {
+function Topbar() {
   const [time, setTime] = useState<string>('')
   const [date, setDate] = useState<string>('')
   const [showActivities, setShowActivities] = useState(false)
-  const { highContrast, toggleHighContrast, windows, openWindow } = useDesktopStore()
+  const { highContrast, toggleHighContrast, windows } = useDesktopStore()
   
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      setTime(now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
-      }))
-      setDate(now.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        month: 'short', 
-        day: 'numeric' 
-      }))
+      setTime(formatTime(now))
+      setDate(formatDate(now))
     }
     
     updateTime()
@@ -31,20 +24,34 @@ export default function Topbar() {
     return () => clearInterval(interval)
   }, [])
   
+  const handleToggleActivities = useCallback(() => {
+    setShowActivities(prev => !prev)
+  }, [])
+  
+  const handleCloseActivities = useCallback(() => {
+    setShowActivities(false)
+  }, [])
+  
+  const activeWindowTitle = useMemo(() => {
+    return windows.length > 0 ? windows[windows.length - 1]?.title || 'Ashim OS' : 'Ashim OS'
+  }, [windows])
+  
   return (
     <div className="glass-panel h-9 flex items-center justify-between px-3 z-50 border-b border-white/10 text-sm">
       {/* Left: Activities & App Name */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => setShowActivities(!showActivities)}
+          onClick={handleToggleActivities}
           className="px-3 py-1 hover:bg-white/10 rounded transition-colors font-medium text-white"
+          aria-label="Toggle activities overview"
+          type="button"
         >
           Activities
         </button>
         {windows.length > 0 && (
           <div className="flex items-center space-x-2 text-white/90">
-            <div className="w-4 h-4 bg-gradient-to-br from-os-accent-green to-os-accent-teal rounded-sm" />
-            <span className="font-medium">{windows[windows.length - 1]?.title || 'Ashim OS'}</span>
+            <div className="w-4 h-4 bg-gradient-to-br from-os-accent-green to-os-accent-teal rounded-sm" aria-hidden="true" />
+            <span className="font-medium">{activeWindowTitle}</span>
           </div>
         )}
       </div>
@@ -94,11 +101,12 @@ export default function Topbar() {
           className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/80"
           aria-label={highContrast ? "Disable high contrast" : "Enable high contrast"}
           title="Toggle Theme"
+          type="button"
         >
           {highContrast ? (
-            <Sun className="w-3.5 h-3.5" />
+            <Sun className="w-3.5 h-3.5" aria-hidden="true" />
           ) : (
-            <Moon className="w-3.5 h-3.5" />
+            <Moon className="w-3.5 h-3.5" aria-hidden="true" />
           )}
         </button>
         
@@ -116,7 +124,9 @@ export default function Topbar() {
       {showActivities && (
         <div 
           className="fixed inset-0 bg-black/80 z-50"
-          onClick={() => setShowActivities(false)}
+          onClick={handleCloseActivities}
+          role="dialog"
+          aria-label="Activities overview"
         >
           <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-4xl p-8">
             <div className="text-center mb-8">
@@ -132,8 +142,13 @@ export default function Topbar() {
                 <div
                   key={window.id}
                   className="glass-panel p-4 rounded-lg hover:bg-white/20 cursor-pointer transition-colors"
-                  onClick={() => {
-                    setShowActivities(false)
+                  onClick={handleCloseActivities}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleCloseActivities()
+                    }
                   }}
                 >
                   <div className="aspect-video bg-black/30 rounded mb-2 flex items-center justify-center">
@@ -149,4 +164,6 @@ export default function Topbar() {
     </div>
   )
 }
+
+export default memo(Topbar)
 
