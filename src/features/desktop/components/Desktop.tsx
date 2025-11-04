@@ -165,7 +165,7 @@ export default function Desktop() {
       <Topbar />
       
       {/* Workspace */}
-      <main className="flex-1 relative overflow-hidden" role="main">
+      <main className="flex-1 relative" style={{ overflow: 'hidden', minHeight: 0 }} role="main">
         {windows.map((window) => {
           const AppComponent = appComponents[window.appId as AppId]
           return (

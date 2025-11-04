@@ -72,13 +72,27 @@ function Dock() {
   const [hoveredApp, setHoveredApp] = useState<AppId | null>(null)
   
   const isAppOpen = useCallback((appId: AppId) => {
-    return windows.some(w => w.appId === appId && !w.isMinimized)
+    return windows.some(w => w.appId === appId)
   }, [windows])
   
   const handleOpenApp = useCallback((appId: AppId, name: string) => {
-    openWindow(appId, name)
+    // Check if window exists and is minimized
+    const existingWindow = windows.find(w => w.appId === appId)
+    
+    if (existingWindow && existingWindow.isMinimized) {
+      // If minimized, just restore it (openWindow will handle this)
+      openWindow(appId, name)
+    } else if (existingWindow) {
+      // If already open and not minimized, minimize it (Ubuntu behavior)
+      const { minimizeWindow } = useDesktopStore.getState()
+      minimizeWindow(existingWindow.id)
+    } else {
+      // If not open, open it
+      openWindow(appId, name)
+    }
+    
     analytics.click('dock_app', { app_id: appId })
-  }, [openWindow])
+  }, [openWindow, windows])
   
   return (
     <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50">
