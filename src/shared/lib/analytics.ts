@@ -7,7 +7,7 @@ import { logger } from './logger'
 
 interface AnalyticsEvent {
   name: string
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
   timestamp?: number
 }
 
@@ -43,7 +43,7 @@ class Analytics {
   /**
    * Track a custom event
    */
-  track(name: string, properties?: Record<string, any>): void {
+  track(name: string, properties?: Record<string, unknown>): void {
     const event: AnalyticsEvent = {
       name,
       properties,
@@ -89,7 +89,7 @@ class Analytics {
   /**
    * Track button/link clicks
    */
-  click(element: string, context?: Record<string, any>): void {
+  click(element: string, context?: Record<string, unknown>): void {
     this.track('click', {
       element,
       ...context,
@@ -99,7 +99,7 @@ class Analytics {
   /**
    * Track errors
    */
-  error(error: Error, context?: Record<string, any>): void {
+  error(error: Error, context?: Record<string, unknown>): void {
     this.track('error', {
       error_message: error.message,
       error_stack: error.stack,
@@ -136,7 +136,7 @@ class Analytics {
   /**
    * Set user properties
    */
-  setUser(userId: string, properties?: Record<string, any>): void {
+  setUser(userId: string, properties?: Record<string, unknown>): void {
     // TODO: Implement user identification
     // Example: gtag('set', { user_id: userId, ...properties })
     

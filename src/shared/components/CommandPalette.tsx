@@ -5,7 +5,6 @@ import { Command } from 'cmdk'
 import { User, Briefcase, FileText, Terminal as TerminalIcon, Mail, Moon, Sun } from 'lucide-react'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
 import { useKeyboardShortcut } from '@/shared/hooks/useKeyboardShortcut'
-import { AppId } from '@/shared/types'
 import { analytics } from '@/shared/lib/analytics'
 
 interface CommandItem {

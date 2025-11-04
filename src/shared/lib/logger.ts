@@ -40,26 +40,30 @@ class Logger {
     return `${timestamp} ${prefix} ${message}`
   }
 
-  debug(message: string, ...args: any[]): void {
+  debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.log(this.formatMessage(message), ...args)
     }
   }
 
-  info(message: string, ...args: any[]): void {
+  info(message: string, ...args: unknown[]): void {
     if (this.shouldLog('info')) {
+      // eslint-disable-next-line no-console
       console.info(this.formatMessage(message), ...args)
     }
   }
 
-  warn(message: string, ...args: any[]): void {
+  warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog('warn')) {
+      // eslint-disable-next-line no-console
       console.warn(this.formatMessage(message), ...args)
     }
   }
 
-  error(message: string, error?: Error | any, ...args: any[]): void {
+  error(message: string, error?: Error | unknown, ...args: unknown[]): void {
     if (this.shouldLog('error')) {
+      // eslint-disable-next-line no-console
       console.error(this.formatMessage(message), error, ...args)
       
       // TODO: Send to error tracking service (e.g., Sentry)
@@ -71,18 +75,21 @@ class Logger {
 
   group(label: string): void {
     if (this.config.enabled) {
+      // eslint-disable-next-line no-console
       console.group(this.formatMessage(label))
     }
   }
 
   groupEnd(): void {
     if (this.config.enabled) {
+      // eslint-disable-next-line no-console
       console.groupEnd()
     }
   }
 
-  table(data: any): void {
+  table(data: unknown): void {
     if (this.config.enabled && this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.table(data)
     }
   }

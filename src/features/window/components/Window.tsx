@@ -32,7 +32,7 @@ function Window({ window, children }: WindowProps) {
     focusWindow(window.id)
   }, [focusWindow, window.id])
   
-  const handleDragEnd = useCallback((_event: any, info: PanInfo) => {
+  const handleDragEnd = useCallback((_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false)
     const newX = Math.max(0, window.position.x + info.offset.x)
     const newY = Math.max(32, window.position.y + info.offset.y) // Don't go above topbar

@@ -206,7 +206,9 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
     addLine(`$ ${trimmedCmd}`, 'input')
     
     // Parse command
-    const [command, ...args] = trimmedCmd.toLowerCase().split(' ')
+    const parts = trimmedCmd.toLowerCase().split(' ')
+    const command = parts[0] || ''
+    const args = parts.slice(1)
     
     // Handle special commands
     if (command === 'open' && args.length > 0) {
@@ -274,7 +276,10 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
       if (history.length > 0) {
         const newIndex = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1)
         setHistoryIndex(newIndex)
-        setInput(history[newIndex])
+        const historyItem = history[newIndex]
+        if (historyItem !== undefined) {
+          setInput(historyItem)
+        }
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -285,7 +290,10 @@ export default function TerminalApp({ windowId }: TerminalAppProps) {
           setInput('')
         } else {
           setHistoryIndex(newIndex)
-          setInput(history[newIndex])
+          const historyItem = history[newIndex]
+          if (historyItem !== undefined) {
+            setInput(historyItem)
+          }
         }
       }
     }

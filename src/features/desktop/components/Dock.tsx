@@ -109,7 +109,7 @@ function Dock() {
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
         
         <div className="relative flex items-end space-x-2" role="toolbar" aria-label="Application dock">
-          {apps.map((app, index) => {
+          {apps.map((app) => {
             const Icon = app.icon
             const isOpen = isAppOpen(app.id)
             const isHovered = hoveredApp === app.id

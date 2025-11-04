@@ -32,8 +32,9 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error to error reporting service in production
+    // eslint-disable-next-line no-console
     console.error('Error Boundary caught an error:', error, errorInfo)
     
     this.setState({
@@ -53,7 +54,7 @@ class ErrorBoundary extends Component<Props, State> {
     })
   }
 
-  render(): ReactNode {
+  override render(): ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback

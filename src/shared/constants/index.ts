@@ -46,7 +46,7 @@ export const APP_METADATA = {
   author: 'Ashim Rudra Paul',
   siteUrl: 'https://ashim.dev',
   ogImage: '/og-image.png',
-} as const
+}
 
 export const SOCIAL_LINKS = {
   linkedin: 'https://linkedin.com/in/ashimrudrapaul',

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useRef, useCallback } from 'react'
 import { FolderOpen, Terminal as TerminalIcon, Settings, RefreshCw, Info } from 'lucide-react'
 import useDesktopStore from '@/shared/hooks/useDesktopStore'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'

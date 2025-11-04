@@ -22,7 +22,7 @@ export function generateId(prefix: string = ''): string {
 /**
  * Debounces a function call
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: never[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -44,7 +44,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttles a function call
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: never[]) => unknown>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
@@ -80,8 +80,8 @@ export function getViewportDimensions(): { width: number; height: number } {
 export function constrainToViewport(
   x: number,
   y: number,
-  windowWidth: number,
-  windowHeight: number,
+  _windowWidth: number,
+  _windowHeight: number,
   minVisibleWidth: number = 200,
   minVisibleHeight: number = 100
 ): { x: number; y: number } {
