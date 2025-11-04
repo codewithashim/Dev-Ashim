@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --os-bg: #0b0f14;
+    --os-surface: #161b22;
+    --os-border: #30363d;
+    --os-text: #c9d1d9;
+    --os-text-muted: #8b949e;
+    --os-accent-green: #22c55e;
+    --os-accent-teal: #14b8a6;
+  }
+  
+  * {
+    @apply border-os-border;
+  }
+  
+  body {
+    @apply bg-os-bg text-os-text font-sans antialiased;
+    overflow: hidden;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-os-bg;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-os-border rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-os-text-muted;
+  }
+  
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-os-accent-teal ring-offset-2 ring-offset-os-bg;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-os-surface/80 backdrop-blur-md border border-os-border;
+  }
+  
+  .window-shadow {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+  
+  .terminal-glow {
+    text-shadow: 0 0 5px currentColor;
+  }
+  
+  .wave-animation {
+    animation: wave-float 20s ease-in-out infinite;
+  }
+  
+  @keyframes wave-float {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-20px) scale(1.02);
+    }
+  }
+}
+
+/* High contrast mode */
+body.high-contrast {
+  --os-bg: #000000;
+  --os-surface: #1a1a1a;
+  --os-border: #ffffff;
+  --os-text: #ffffff;
+  --os-text-muted: #cccccc;
+}
+
+body.high-contrast * {
+  @apply border-white/50;
+}
+
+body.high-contrast .glass-panel {
+  @apply bg-black/90 border-white/50;
+}
+
